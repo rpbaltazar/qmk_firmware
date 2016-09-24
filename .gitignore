@@ -21,6 +21,7 @@ quantum/version.h
 .idea/
 CMakeLists.txt
 .DS_STORE
+keyboards/ergodox/keymap_passwords.h
 
 # Eclipse/PyCharm/Other IDE Settings
 .cproject
@@ -30,3 +31,4 @@ CMakeLists.txt
 .browse.VC.db*
 *.stackdump
 util/Win_Check_Output.txt
+*\#*
