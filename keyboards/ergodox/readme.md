@@ -7,10 +7,10 @@ experience or the setup of a build environment.
 Quickstart:
 
   - Find and download an existing firmware
-    [from Other Firmware Options](#other-firmware-options)
+	[from Other Firmware Options](#other-firmware-options)
 
   - Then flash the firmware to your [ErgoDox Ez](#ergodox-ez)
-    or [ErgoDox Infinity](#ergodox-infinity)
+	or [ErgoDox Infinity](#ergodox-infinity)
 
 # Customizing Keymaps
 
@@ -32,11 +32,11 @@ to customize a keymap:
   - Make a new directory under "keymaps" to hold your customizations.
 
   - Copy an existing keymap that is close to what you want, such as
-    "keymaps/default/keymap.c".
+	"keymaps/default/keymap.c".
 
   - Use an editor to modify the new "keymap.c".  See "Finding the keycodes you
-    need" below).  Try to edit the comments as well, so the "text graphics"
-    represent your layout correctly.
+	need" below).  Try to edit the comments as well, so the "text graphics"
+	represent your layout correctly.
 
   - Compile your new firmware (see below)
 
@@ -45,8 +45,8 @@ to customize a keymap:
   - Test the changes.
 
   - Submit your keymap as a pull request to the qmk_firmware repository so
-    others can use it.  You will want to add a "readme.md" that describes the
-    keymap.
+	others can use it.  You will want to add a "readme.md" that describes the
+	keymap.
 
 # Build Dependencies
 
@@ -72,16 +72,16 @@ Some distributions provide a binary, maybe called `teensy-loader-cli`).
 
 To flash the firmware:
 
-  - Build the firmware with `make keymapname`, for example `make default` 
+  - Build the firmware with `make keymapname`, for example `make default`
   - This will result in a hex file called `ergodox_ez_keymapname.hex`, e.g.
-    `ergodox_ez_default.hex`
+	`ergodox_ez_default.hex`
 
   - Start the teensy loader.
 
   - Load the .hex file into it.
 
   - Press the Reset button by inserting a paperclip gently into the reset hole
-    in the top right corder.
+	in the top right corder.
 
   - Click the button in the Teensy app to download the firmware.
 
@@ -98,6 +98,15 @@ for the left and right halves seperately.  To flash them:
 
   - Install the firmware with `sudo make infinity-keymapname-dfu-util`
 
+	- If dfu-util detects more than one dfu compatible device, you can go to the build folder `.build/` and install it directly using the dfu util
+	```
+	$ dfu-util --list
+	> Found Runtime: [00aa:1231] ver=0011, devnum=2, cfg=1, intf=1, path="20-1", alt=0, name="UNKNOWN", serial="UNKNOWN"
+	> Found DFU: [11c11:b007] ver=0011, devnum=2, cfg=1, intf=1, path="20-1", alt=0, name="Kiibohd DFU", serial="asdasd1231asd"
+
+	$ dfu-util -a 0 -d 1c11:b007 -D ergodox_infinity_keymapname.bin
+	```
+
   - Build left hand firmware with `make infinity-keymapname MASTER=right`
 
   - Plug in the right hand keyboard only.
@@ -105,6 +114,9 @@ for the left and right halves seperately.  To flash them:
   - Press the program button (back of keyboard, above thumb pad).
 
   - Install the firmware with `sudo make infinity-keymapname-dfu-util MASTER=right`
+
+	- If you had to install manually, the left hand it's likely that you'll have to install manually the right hand.
+	Just follow the same process as the bin file has been replaced with the right hand in the build step before.
 
 More information on the Infinity firmware is available in the [TMK/chibios for
 Input Club Infinity Ergodox](https://github.com/fredizzimo/infinity_ergodox/blob/master/README.md)
