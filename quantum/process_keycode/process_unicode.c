@@ -1,7 +1,10 @@
 #include "process_unicode.h"
+#include "action_util.h"
 
 static uint8_t input_mode;
+uint8_t mods;
 
+__attribute__((weak))
 uint16_t hex_to_keycode(uint8_t hex)
 {
   if (hex == 0x0) {
@@ -24,6 +27,19 @@ uint8_t get_unicode_input_mode(void) {
 
 __attribute__((weak))
 void unicode_input_start (void) {
+  // save current mods
+  mods = keyboard_report->mods;
+
+  // unregister all mods to start from clean state
+  if (mods & MOD_BIT(KC_LSFT)) unregister_code(KC_LSFT);
+  if (mods & MOD_BIT(KC_RSFT)) unregister_code(KC_RSFT);
+  if (mods & MOD_BIT(KC_LCTL)) unregister_code(KC_LCTL);
+  if (mods & MOD_BIT(KC_RCTL)) unregister_code(KC_RCTL);
+  if (mods & MOD_BIT(KC_LALT)) unregister_code(KC_LALT);
+  if (mods & MOD_BIT(KC_RALT)) unregister_code(KC_RALT);
+  if (mods & MOD_BIT(KC_LGUI)) unregister_code(KC_LGUI);
+  if (mods & MOD_BIT(KC_RGUI)) unregister_code(KC_RGUI);
+
   switch(input_mode) {
   case UC_OSX:
     register_code(KC_LALT);
@@ -41,6 +57,11 @@ void unicode_input_start (void) {
     register_code(KC_PPLS);
     unregister_code(KC_PPLS);
     break;
+  case UC_WINC:
+    register_code(KC_RALT);
+    unregister_code(KC_RALT);
+    register_code(KC_U);
+    unregister_code(KC_U);
   }
   wait_ms(UNICODE_TYPE_DELAY);
 }
@@ -48,15 +69,25 @@ void unicode_input_start (void) {
 __attribute__((weak))
 void unicode_input_finish (void) {
   switch(input_mode) {
-  case UC_OSX:
-  case UC_WIN:
-    unregister_code(KC_LALT);
-    break;
-  case UC_LNX:
-    register_code(KC_SPC);
-    unregister_code(KC_SPC);
-    break;
+    case UC_OSX:
+    case UC_WIN:
+      unregister_code(KC_LALT);
+      break;
+    case UC_LNX:
+      register_code(KC_SPC);
+      unregister_code(KC_SPC);
+      break;
   }
+
+  // reregister previously set mods
+  if (mods & MOD_BIT(KC_LSFT)) register_code(KC_LSFT);
+  if (mods & MOD_BIT(KC_RSFT)) register_code(KC_RSFT);
+  if (mods & MOD_BIT(KC_LCTL)) register_code(KC_LCTL);
+  if (mods & MOD_BIT(KC_RCTL)) register_code(KC_RCTL);
+  if (mods & MOD_BIT(KC_LALT)) register_code(KC_LALT);
+  if (mods & MOD_BIT(KC_RALT)) register_code(KC_RALT);
+  if (mods & MOD_BIT(KC_LGUI)) register_code(KC_LGUI);
+  if (mods & MOD_BIT(KC_RGUI)) register_code(KC_RGUI);
 }
 
 void register_hex(uint16_t hex) {
@@ -76,6 +107,52 @@ bool process_unicode(uint16_t keycode, keyrecord_t *record) {
   }
   return true;
 }
+
+#ifdef UNICODEMAP_ENABLE
+__attribute__((weak))
+const uint32_t PROGMEM unicode_map[] = {
+};
+
+void register_hex32(uint32_t hex) {
+  uint8_t onzerostart = 1;
+  for(int i = 7; i >= 0; i--) {
+    if (i <= 3) {
+      onzerostart = 0;
+    }
+    uint8_t digit = ((hex >> (i*4)) & 0xF);
+    if (digit == 0) {
+      if (onzerostart == 0) {
+        register_code(hex_to_keycode(digit));
+        unregister_code(hex_to_keycode(digit));
+      }
+    } else {
+      register_code(hex_to_keycode(digit));
+      unregister_code(hex_to_keycode(digit));
+      onzerostart = 0;
+    }
+  }
+}
+
+__attribute__((weak))
+void unicode_map_input_error() {}
+
+bool process_unicode_map(uint16_t keycode, keyrecord_t *record) {
+  if ((keycode & QK_UNICODE_MAP) == QK_UNICODE_MAP && record->event.pressed) {
+    const uint32_t* map = unicode_map;
+    uint16_t index = keycode & 0x7FF;
+    uint32_t code = pgm_read_dword_far(&map[index]);
+    if ((code > 0xFFFF && input_mode == UC_OSX) || (code > 0xFFFFF && input_mode == UC_LNX)) {
+      // when character is out of range supported by the OS
+      unicode_map_input_error();
+    } else {
+      unicode_input_start();
+      register_hex32(code);
+      unicode_input_finish();
+    }
+  }
+  return true;
+}
+#endif
 
 #ifdef UCIS_ENABLE
 qk_ucis_state_t qk_ucis_state;
