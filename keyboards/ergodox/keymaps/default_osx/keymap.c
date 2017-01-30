@@ -5,6 +5,10 @@
 #include "debug.h"
 #include "action_layer.h"
 
+#ifdef SUBPROJECT_infinity
+#include "visualizer/lcd_backlight.h"
+#endif
+
 #define BASE 0 // default layer
 #define SYMB 1 // symbols
 #define MDIA 2 // media keys
@@ -151,16 +155,26 @@ void matrix_scan_user(void) {
     ergodox_right_led_2_off();
     ergodox_right_led_3_off();
     switch (layer) {
-      // TODO: Make this relevant to the ErgoDox EZ.
-	case 1:
-	    ergodox_right_led_2_on();
-	    break;
-	case 2:
-	    ergodox_right_led_3_on();
-	    break;
-	default:
-	    // none
-	    break;
+    case 0:
+      #ifdef SUBPROJECT_infinity
+      lcd_backlight_hal_color(0, 0, 5000);
+      #endif
+      break;
+    case 1:
+      #ifdef SUBPROJECT_infinity
+      lcd_backlight_hal_color(5000, 2500, 0);
+      #endif
+      ergodox_right_led_2_on();
+      break;
+    case 2:
+      #ifdef SUBPROJECT_infinity
+      lcd_backlight_hal_color(5000, 0, 0);
+      #endif
+      ergodox_right_led_3_on();
+      break;
+    default:
+      // none
+      break;
     }
 
 };
