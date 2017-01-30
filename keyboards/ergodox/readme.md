@@ -1,6 +1,6 @@
 # The Easy Way
 
-If you have an ErgoDox EZ, the absolute easiest way for you to customize your firmware is using the [graphical configurator](http://configure.ergodox-ez.com), which uses QMK under the hood. 
+If you have an ErgoDox EZ, the absolute easiest way for you to customize your firmware is using the [graphical configurator](http://configure.ergodox-ez.com), which uses QMK under the hood.
 
 If you can find firmware someone else has made that does what you want, that
 is the easiest way to customize your ErgoDox.  It requires no programming
@@ -109,7 +109,7 @@ for the left and right halves seperately.  To flash them:
 	$ dfu-util -a 0 -d 1c11:b007 -D ergodox_infinity_keymapname.bin
 	```
 
-  - Build left hand firmware with `make infinity-keymapname MASTER=right`
+  - Build right hand firmware with `make infinity-keymapname MASTER=right`
 
   - Plug in the right hand keyboard only.
 

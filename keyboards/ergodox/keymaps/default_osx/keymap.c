@@ -114,9 +114,9 @@ const uint16_t PROGMEM fn_actions[] = {
   [2] = ACTION_LAYER_SET(0, ON_PRESS),         // FN2 - set Layer 0
   [3] = ACTION_MACRO(PASSWORD1),
   [4] = ACTION_MACRO(PASSWORD2),
-  [4] = ACTION_MACRO(PASSWORD3),
-  [5] = ACTION_MACRO(PASSWORD4),
-  [6] = ACTION_MACRO(PASSWORD5),
+  [5] = ACTION_MACRO(PASSWORD3),
+  [6] = ACTION_MACRO(PASSWORD4),
+  [7] = ACTION_MACRO(PASSWORD5),
 };
 
 #include "keymap_passwords.h"
